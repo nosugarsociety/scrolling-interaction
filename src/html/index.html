@@ -1,19 +1,30 @@
 <html lang="ru">
 <head>
-    <title>Boilerplate</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <title>Scrolling mug</title>
 </head>
 <body>
-<include>_header.html</include>
-<div class="grid-row">
-    <div class="grid-col--5">
-        <div class="cat">
-            <img src="assets/img/cat.jpg" width="100" alt="">
-            <div class="cat__photo"></div>
-            <div class="cat__title">Cat</div>
-        </div>
-    </div>
-</div>
-<a href="products.html">products.html</a>
-<include>_footer.html</include>
+  <div class="container">
+    <nav class="global-nav">
+      <div class="global-nav-links">
+        <a href="#" class="global-nav-item">Rooms</a>
+        <a href="#" class="global-nav-item">Ideas</a>
+        <a href="#" class="global-nav-item">Stores</a>
+        <a href="#" class="global-nav-item">Contact</a>
+      </div>
+    </nav>
+    <nav class="local-nav">
+      <div class="local-nav-links">
+        <a href="#" class="product-name">AirMug Pro</a>
+        <a href="#">Intro</a>
+        <a href="#">Spec</a>
+        <a href="#">Buy</a>
+      </div>
+    </nav>
+  </div>
 </body>
 </html>
