@@ -1,6 +1,10 @@
 .global-nav,
 .local-nav {
   padding: 0 1rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
 }
 
 .global-nav {
@@ -8,6 +12,7 @@
 }
 
 .local-nav {
+  top: 45px;
   height: 52px;
   border-bottom: 1px solid #ddd;
 }
