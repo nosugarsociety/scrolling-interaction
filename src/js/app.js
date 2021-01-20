@@ -9,8 +9,13 @@
       type: 'sticky',
       heightNum: 5,
       scrollHeight: 0,
+      values: { opacity: [0, 1] },
       objs: {
         container: document.querySelector('#scroll-section-0'),
+        messageA: document.querySelector('.main-message.a'),
+        messageB: document.querySelector('.main-message.b'),
+        messageC: document.querySelector('.main-message.c'),
+        messageD: document.querySelector('.main-message.d'),
       },
     },
     {
@@ -58,7 +63,6 @@
 
       if (totaScrolllHeight >= window.pageYOffset) {
         currentScene = i;
-        console.log('set Layout currentScene:', currentScene);
         break;
       }
     }
@@ -67,6 +71,27 @@
       'class',
       `scroll-section-${currentScene}--active`
     );
+  };
+
+  const currentScrollAnim = (scene) => {
+    const oValue = sceneInfo[scene].values.opacity;
+    const obj = sceneInfo[scene].objs;
+    switch (scene) {
+      case 0:
+        const rv = yOffset / sceneInfo[scene].scrollHeight;
+        const opacityToApply = rv * (oValue[1] - oValue[0]) + oValue[0];
+        obj.messageA.style.opacity = opacityToApply;
+
+        // objs.element1.style;
+        break;
+      case 1:
+        break;
+      case 2:
+        break;
+      case 3:
+        break;
+      default:
+    }
   };
 
   const scrollLoop = () => {
@@ -94,6 +119,8 @@
         `scroll-section-${currentScene}--active`
       );
     }
+
+    currentScrollAnim(currentScene);
   };
 
   window.addEventListener('load', setLayout);
@@ -105,3 +132,16 @@
 
   setLayout();
 })();
+
+// set message a, b, c, d selector inside sceneInfo
+
+// values for opacity control area
+// make function which only work depend on currentScene
+// use Switch statement
+
+// calcValues function
+// find out cuuretYoffset
+
+// fix the bug when scroll hits the top of section.
+
+// set specific timing for animmation

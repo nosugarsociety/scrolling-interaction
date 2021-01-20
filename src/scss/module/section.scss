@@ -14,8 +14,12 @@
 
   small {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.5refm;
     font-size: 1.2rem;
+  }
+
+  &.a , &.b, &.c, &.d {
+    opacity: 0;
   }
 }
 
