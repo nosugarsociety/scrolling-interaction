@@ -57,7 +57,6 @@
     }
 
     let totaScrolllHeight = 0;
-    // console.log('win pyoff:', window.pageYOffset);
     for (let i = 0; i < sceneInfo.length; i++) {
       totaScrolllHeight += sceneInfo[i].scrollHeight;
 
@@ -73,14 +72,22 @@
     );
   };
 
+  const calcValue = (scene, values, currentYoffset) => {
+    let rv;
+    let scrollRatio = currentYoffset / sceneInfo[scene].scrollHeight;
+    rv = scrollRatio * (values[1] - values[0]) + values[0];
+    return rv;
+  };
+
   const currentScrollAnim = (scene) => {
-    const oValue = sceneInfo[scene].values.opacity;
+    const values = sceneInfo[scene].values;
     const obj = sceneInfo[scene].objs;
+    const currentYoffset = yOffset - prevScrollHeight;
+
     switch (scene) {
       case 0:
-        const rv = yOffset / sceneInfo[scene].scrollHeight;
-        const opacityToApply = rv * (oValue[1] - oValue[0]) + oValue[0];
-        obj.messageA.style.opacity = opacityToApply;
+        let oMessageA = calcValue(scene, values.opacity, currentYoffset);
+        obj.messageA.style.opacity = oMessageA;
 
         // objs.element1.style;
         break;
@@ -96,12 +103,14 @@
 
   const scrollLoop = () => {
     prevScrollHeight = 0;
+    let enterNewScence = false;
 
     for (let i = 0; i < currentScene; i++) {
       prevScrollHeight += sceneInfo[i].scrollHeight;
     }
 
     if (yOffset > prevScrollHeight + sceneInfo[currentScene].scrollHeight) {
+      enterNewScence = true;
       currentScene += 1;
 
       document.body.setAttribute(
@@ -112,6 +121,7 @@
 
     if (yOffset < prevScrollHeight) {
       if (currentScene === 0) return;
+      enterNewScence = true;
       currentScene -= 1;
 
       document.body.setAttribute(
@@ -119,8 +129,9 @@
         `scroll-section-${currentScene}--active`
       );
     }
-
-    currentScrollAnim(currentScene);
+    if (!enterNewScence) {
+      currentScrollAnim(currentScene);
+    }
   };
 
   window.addEventListener('load', setLayout);
