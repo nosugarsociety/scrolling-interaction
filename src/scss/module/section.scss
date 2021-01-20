@@ -2,6 +2,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  top: 35vh;
   height: 3em;
   font-size: 1.6rem;
   margin: 12px 0;
@@ -96,11 +97,9 @@
   background-color: darkorange;
 }
 
-
 .sticky-elem {
   display: none;
   position: fixed;
-  top: 0;
   left: 0;
   width: 100%;
 }
