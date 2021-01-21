@@ -54,6 +54,16 @@
   .main-message {
     font-size: 3.5rem;
   }
+
+  .b {
+    top: 10%;
+    left: 40%;
+  }
+
+  .c {
+    top: 15%;
+    left: 45%;
+  }
 }
 
 .desc-message {
@@ -104,6 +114,11 @@
   width: 100%;
 }
 
+.sticky-elem-canvas {
+  top: 0;
+  background: #ccc;
+}
+
 .scroll-section-0--active #scroll-section-0 .sticky-elem,
 .scroll-section-1--active #scroll-section-1 .sticky-elem,
 .scroll-section-2--active #scroll-section-2 .sticky-elem,
@@ -130,8 +145,19 @@
     }
   }
 
-  #scroll-section-2 .main-message {
-    font-size: 6vw;
+  #scroll-section-2 {
+    .main-message {
+      font-size: 6vw;
+    }
+  
+    .b {
+      top: 20%;
+      left: 53%;
+    }
+  
+    .c {
+      left: 55%;
+    }
   }
 
   .main-message small {

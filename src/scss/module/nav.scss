@@ -9,9 +9,11 @@
 
 .global-nav {
   height: 44px;
+  z-index: 10;
 }
 
 .local-nav {
+  z-index: 11;
   top: 45px;
   height: 52px;
   border-bottom: 1px solid #ddd;
