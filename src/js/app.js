@@ -12,6 +12,7 @@
       values: {
         videoImageCount: 300,
         imageSequence: [0, 299],
+        canvas_opacity: [1, 0, { start: 0.9, end: 1 }],
         messageA_opacity_in: [0, 1, { start: 0.1, end: 0.2 }],
         messageB_opacity_in: [0, 1, { start: 0.3, end: 0.4 }],
         messageC_opacity_in: [0, 1, { start: 0.5, end: 0.6 }],
@@ -128,6 +129,9 @@
       'class',
       `scroll-section-${currentScene}--active`
     );
+
+    const heightRatio = window.innerHeight / 1080;
+    sceneInfo[0].objs.canvas.style.transform = `translate3D(-50%, -50%, 0) scale(${heightRatio})`;
   };
 
   const calcValue = (scene, values, currentYoffset) => {
@@ -173,6 +177,12 @@
           calcValue(scene, values.imageSequence, currentYoffset)
         );
         obj.context.drawImage(obj.videoImages[sequence], 0, 0);
+
+        obj.canvas.style.opacity = calcValue(
+          scene,
+          values.canvas_opacity,
+          currentYoffset
+        );
 
         if (scrollRatio <= 0.22) {
           // in
@@ -422,12 +432,16 @@
     }
   };
 
-  window.addEventListener('load', setLayout);
-  window.addEventListener('resize', setLayout);
   window.addEventListener('scroll', () => {
     yOffset = window.pageYOffset;
     scrollLoop();
   });
+
+  window.addEventListener('load', () => {
+    setLayout();
+    sceneInfo[0].objs.context.drawImage(obj.videoImages[0], 0, 0);
+  });
+  window.addEventListener('resize', setLayout);
 
   setLayout();
 })();
