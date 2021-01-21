@@ -62,8 +62,15 @@
         messageC: document.querySelector('#scroll-section-2 .c'),
         pinB: document.querySelector('#scroll-section-2 .b .pin'),
         pinC: document.querySelector('#scroll-section-2 .c .pin'),
+        canvas: document.querySelector('#video-canvas-1'),
+        context: document.querySelector('#video-canvas-1').getContext('2d'),
+        videoImages: [],
       },
       values: {
+        videoImageCount: 960,
+        imageSequence: [0, 960],
+        canvas_opacity_in: [0, 1, { start: 0.1, end: 0.2 }],
+        canvas_opacity_out: [1, 0, { start: 0.9, end: 1 }],
         messageA_translateY_in: [20, 0, { start: 0.15, end: 0.2 }],
         messageB_translateY_in: [30, 0, { start: 0.6, end: 0.65 }],
         messageC_translateY_in: [30, 0, { start: 0.87, end: 0.92 }],
@@ -97,6 +104,15 @@
       imgElm = new Image();
       imgElm.src = `./assets/img/001/IMG_${6726 + i}.JPG`;
       sceneInfo[0].objs.videoImages.push(imgElm);
+    }
+
+    console.log(sceneInfo[0].objs.videoImages);
+
+    let imgElm2;
+    for (let i = 0; i < sceneInfo[2].values.videoImageCount; i++) {
+      imgElm2 = new Image();
+      imgElm2.src = `./assets/img/002/IMG_${7027 + i}.JPG`;
+      sceneInfo[2].objs.videoImages.push(imgElm2);
     }
   };
 
@@ -132,6 +148,7 @@
 
     const heightRatio = window.innerHeight / 1080;
     sceneInfo[0].objs.canvas.style.transform = `translate3D(-50%, -50%, 0) scale(${heightRatio})`;
+    sceneInfo[2].objs.canvas.style.transform = `translate3D(-50%, -50%, 0) scale(${heightRatio})`;
   };
 
   const calcValue = (scene, values, currentYoffset) => {
@@ -293,6 +310,25 @@
       case 1:
         break;
       case 2:
+        let sequence2 = Math.round(
+          calcValue(scene, values.imageSequence, currentYoffset)
+        );
+        obj.context.drawImage(obj.videoImages[sequence2], 0, 0);
+
+        if (scrollRatio <= 0.5) {
+          obj.canvas.style.opacity = calcValue(
+            scene,
+            values.canvas_opacity_in,
+            currentYoffset
+          );
+        } else {
+          obj.canvas.style.opacity = calcValue(
+            scene,
+            values.canvas_opacity_out,
+            currentYoffset
+          );
+        }
+
         if (scrollRatio <= 0.32) {
           // in
           obj.messageA.style.opacity = calcValue(
@@ -439,7 +475,7 @@
 
   window.addEventListener('load', () => {
     setLayout();
-    sceneInfo[0].objs.context.drawImage(obj.videoImages[0], 0, 0);
+    sceneInfo[0].objs.context.drawImage(sceneInfo[0].objs.videoImages[0], 0, 0);
   });
   window.addEventListener('resize', setLayout);
 
