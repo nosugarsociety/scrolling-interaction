@@ -94,6 +94,17 @@
       scrollHeight: 0,
       objs: {
         container: document.querySelector('#scroll-section-3'),
+        canvas: document.querySelector('.image-blend-canvas'),
+        context: document.querySelector('.image-blend-canvas').getContext('2d'),
+        imagePath: [
+          './assets/img/blending/oban.jpg',
+          './assets/img/blending/blend-image-2.jpg',
+        ],
+        images: [],
+      },
+      values: {
+        rect1X: [0, 0, { start: 0, end: 0 }],
+        rect2X: [0, 0, { start: 0, end: 0 }],
       },
     },
   ];
@@ -106,13 +117,18 @@
       sceneInfo[0].objs.videoImages.push(imgElm);
     }
 
-    console.log(sceneInfo[0].objs.videoImages);
-
     let imgElm2;
     for (let i = 0; i < sceneInfo[2].values.videoImageCount; i++) {
       imgElm2 = new Image();
       imgElm2.src = `./assets/img/002/IMG_${7027 + i}.JPG`;
       sceneInfo[2].objs.videoImages.push(imgElm2);
+    }
+
+    let imgElm3;
+    for (let i = 0; i < sceneInfo[3].objs.imagePath.length; i++) {
+      imgElm3 = new Image();
+      imgElm3.src = sceneInfo[3].objs.imagePath[i];
+      sceneInfo[3].objs.images.push(imgElm3);
     }
   };
 
@@ -430,6 +446,41 @@
         break;
 
       case 3:
+        const widthRatio = window.innerWidth / obj.canvas.width;
+        const heightRatio = window.innerHeight / obj.canvas.height;
+        let canvasScaleRatio;
+
+        if (widthRatio <= heightRatio) {
+          canvasScaleRatio = heightRatio;
+        } else {
+          canvasScaleRatio = widthRatio;
+        }
+
+        obj.canvas.style.transform = `scale(${canvasScaleRatio})`;
+        obj.context.drawImage(obj.images[0], 0, 0);
+
+        const recalInnerWidth = window.innerWidth / canvasScaleRatio;
+        const recalInnerHeight = window.innerHeight / canvasScaleRatio;
+
+        const whiteRectWidth = recalInnerWidth * 0.15;
+        values.rect1X[0] = (obj.canvas.width - recalInnerWidth) / 2;
+        values.rect1X[1] = values.rect1X[0] - whiteRectWidth;
+        values.rect2X[0] = values.rect1X[0] + recalInnerWidth - whiteRectWidth;
+        values.rect2X[1] = values.rect2X[0] + whiteRectWidth;
+        obj.canvas.height;
+        obj.context.fillRect(
+          values.rect1X[0],
+          0,
+          parseInt(whiteRectWidth),
+          recalInnerHeight
+        );
+        obj.context.fillRect(
+          values.rect2X[0],
+          0,
+          parseInt(whiteRectWidth),
+          recalInnerHeight
+        );
+
         break;
       default:
     }
@@ -463,6 +514,7 @@
         `scroll-section-${currentScene}--active`
       );
     }
+
     if (!enterNewScence) {
       currentScrollAnim(currentScene);
     }
