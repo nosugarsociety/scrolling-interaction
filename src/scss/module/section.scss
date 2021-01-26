@@ -117,8 +117,12 @@
   align-items: center;
 }
 
+// Section 3
 .image-blend-canvas {
-  
+  &.sticky {
+    top: 0;
+    position: fixed;
+  }
 }
 
 @media (min-width: 1024px) {   

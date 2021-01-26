@@ -489,6 +489,7 @@
         break;
 
       case 3:
+        let step = 0;
         const widthRatio = window.innerWidth / obj.canvas.width;
         const heightRatio = window.innerHeight / obj.canvas.height;
         let canvasScaleRatio;
@@ -542,6 +543,23 @@
           parseInt(whiteRectWidth),
           obj.canvas.height
         );
+
+        // if canvas does not touch top of the browser
+        if (scrollRatio < values.rect1X[2].end) {
+          step = 1;
+          console.log('Bafore canvas touch the top');
+          obj.canvas.classList.remove('sticky');
+        } else {
+          step = 2;
+          console.log('After canvas touch the top');
+          obj.canvas.classList.add('sticky');
+          obj.canvas.style.top = `${
+            -(obj.canvas.height - obj.canvas.height * canvasScaleRatio) / 2
+          }px`;
+          // if () {
+          //   step = 3;
+          // }
+        }
 
         break;
       default:
