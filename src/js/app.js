@@ -105,6 +105,7 @@
       values: {
         rect1X: [0, 0, { start: 0, end: 0 }],
         rect2X: [0, 0, { start: 0, end: 0 }],
+        rectStartY: 0,
       },
     },
   ];
@@ -443,6 +444,48 @@
           )})`;
         }
 
+        // Draw Image on canvas which is being used on case 3 (inside case 2)
+        if (scrollRatio > 0.9) {
+          const values = sceneInfo[3].values;
+          const obj = sceneInfo[3].objs;
+          const widthRatio = window.innerWidth / obj.canvas.width;
+          const heightRatio = window.innerHeight / obj.canvas.height;
+          let canvasScaleRatio;
+
+          if (widthRatio <= heightRatio) {
+            canvasScaleRatio = heightRatio;
+          } else {
+            canvasScaleRatio = widthRatio;
+          }
+
+          obj.canvas.style.transform = `scale(${canvasScaleRatio})`;
+          obj.context.fillStyle = 'white';
+          obj.context.drawImage(obj.images[0], 0, 0);
+
+          const recalInnerWidth = window.innerWidth / canvasScaleRatio;
+          const recalInnerHeight = window.innerHeight / canvasScaleRatio;
+
+          const whiteRectWidth = recalInnerWidth * 0.15;
+          values.rect1X[0] = (obj.canvas.width - recalInnerWidth) / 2;
+          values.rect1X[1] = values.rect1X[0] - whiteRectWidth;
+          values.rect2X[0] =
+            values.rect1X[0] + recalInnerWidth - whiteRectWidth;
+          values.rect2X[1] = values.rect2X[0] + whiteRectWidth;
+
+          obj.context.fillRect(
+            parseInt(values.rect1X[0]),
+            0,
+            parseInt(whiteRectWidth),
+            obj.canvas.height
+          );
+          obj.context.fillRect(
+            parseInt(values.rect2X[0]),
+            0,
+            parseInt(whiteRectWidth),
+            obj.canvas.height
+          );
+        }
+
         break;
 
       case 3:
@@ -457,28 +500,47 @@
         }
 
         obj.canvas.style.transform = `scale(${canvasScaleRatio})`;
+        obj.context.fillStyle = 'white';
         obj.context.drawImage(obj.images[0], 0, 0);
 
         const recalInnerWidth = window.innerWidth / canvasScaleRatio;
         const recalInnerHeight = window.innerHeight / canvasScaleRatio;
+
+        // console.log(obj.canvas.getBoundingClientRect());
+        if (!values.rectStartY) {
+          // values.rectStartY = obj.canvas.getBoundingClientRect().top;
+          values.rectStartY =
+            obj.canvas.offsetTop +
+            (obj.canvas.height - obj.canvas.height * canvasScaleRatio) / 2;
+
+          values.rect1X[2].start =
+            window.innerHeight / 2 / sceneInfo[scene].scrollHeight;
+          values.rect2X[2].start =
+            window.innerHeight / 2 / sceneInfo[scene].scrollHeight;
+
+          values.rect1X[2].end =
+            values.rectStartY / sceneInfo[scene].scrollHeight;
+          values.rect2X[2].end =
+            values.rectStartY / sceneInfo[scene].scrollHeight;
+        }
 
         const whiteRectWidth = recalInnerWidth * 0.15;
         values.rect1X[0] = (obj.canvas.width - recalInnerWidth) / 2;
         values.rect1X[1] = values.rect1X[0] - whiteRectWidth;
         values.rect2X[0] = values.rect1X[0] + recalInnerWidth - whiteRectWidth;
         values.rect2X[1] = values.rect2X[0] + whiteRectWidth;
-        obj.canvas.height;
+
         obj.context.fillRect(
-          values.rect1X[0],
+          parseInt(calcValue(scene, values.rect1X, currentYoffset)),
           0,
           parseInt(whiteRectWidth),
-          recalInnerHeight
+          obj.canvas.height
         );
         obj.context.fillRect(
-          values.rect2X[0],
+          parseInt(calcValue(scene, values.rect2X, currentYoffset)),
           0,
           parseInt(whiteRectWidth),
-          recalInnerHeight
+          obj.canvas.height
         );
 
         break;
