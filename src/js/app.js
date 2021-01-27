@@ -105,6 +105,7 @@
       values: {
         rect1X: [0, 0, { start: 0, end: 0 }],
         rect2X: [0, 0, { start: 0, end: 0 }],
+        blendHeight: [0, 0, { start: 0, end: 0 }],
         rectStartY: 0,
       },
     },
@@ -551,14 +552,37 @@
           obj.canvas.classList.remove('sticky');
         } else {
           step = 2;
-          console.log('After canvas touch the top');
+          // blendHeight: [0, 0, { start: 0, end: 0 }],
+          // console.log('After canvas touch the top');
+          values.blendHeight[1] = obj.canvas.height;
+          values.blendHeight[2].start = values.rect1X[2].end;
+          values.blendHeight[2].end = values.blendHeight[2].start + 0.2;
+          const blendHeight = calcValue(
+            scene,
+            values.blendHeight,
+            currentYoffset
+          );
+
+          obj.context.drawImage(
+            obj.images[1],
+            0,
+            obj.canvas.height - blendHeight,
+            obj.canvas.width,
+            blendHeight,
+            0,
+            obj.canvas.height - blendHeight,
+            obj.canvas.width,
+            blendHeight
+          );
+
           obj.canvas.classList.add('sticky');
           obj.canvas.style.top = `${
             -(obj.canvas.height - obj.canvas.height * canvasScaleRatio) / 2
           }px`;
-          // if () {
-          //   step = 3;
-          // }
+
+          if (scrollRatio > values.blendHeight[2].end) {
+            // after masking image cover the canvas
+          }
         }
 
         break;
