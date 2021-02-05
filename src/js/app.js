@@ -105,6 +105,7 @@
       values: {
         rect1X: [0, 0, { start: 0, end: 0 }],
         rect2X: [0, 0, { start: 0, end: 0 }],
+        rectStartY: 0,
       },
     },
   ];
@@ -457,28 +458,48 @@
         }
 
         obj.canvas.style.transform = `scale(${canvasScaleRatio})`;
+        obj.context.fillStyle = 'white';
         obj.context.drawImage(obj.images[0], 0, 0);
 
-        const recalInnerWidth = window.innerWidth / canvasScaleRatio;
+        const recalInnerWidth = document.body.offsetWidth / canvasScaleRatio;
         const recalInnerHeight = window.innerHeight / canvasScaleRatio;
+
+        if (!values.rectStartY) {
+          // values.rectStartY = objs.canvas.getBoundingClientRect().top
+          values.rectStartY =
+            obj.canvas.offsetTop +
+            (obj.canvas.height - obj.canvas.height * canvasScaleRatio) / 2;
+
+          values.rect1X[2].start =
+            values.rectStartY / 2 / sceneInfo[scene].scrollHeight;
+          values.rect2X[2].start =
+            values.rectStartY / 2 / sceneInfo[scene].scrollHeight;
+          values.rect1X[2].end =
+            values.rectStartY / sceneInfo[scene].scrollHeight;
+          values.rect2X[2].end =
+            values.rectStartY / sceneInfo[scene].scrollHeight;
+        }
+
+        console.log(obj.canvas.offsetTop);
 
         const whiteRectWidth = recalInnerWidth * 0.15;
         values.rect1X[0] = (obj.canvas.width - recalInnerWidth) / 2;
         values.rect1X[1] = values.rect1X[0] - whiteRectWidth;
         values.rect2X[0] = values.rect1X[0] + recalInnerWidth - whiteRectWidth;
         values.rect2X[1] = values.rect2X[0] + whiteRectWidth;
-        obj.canvas.height;
+
+        // obj.canvas.height;
         obj.context.fillRect(
-          values.rect1X[0],
+          parseInt(calcValue(scene, values.rect1X, currentYoffset)),
           0,
           parseInt(whiteRectWidth),
-          recalInnerHeight
+          parseInt(recalInnerHeight)
         );
         obj.context.fillRect(
-          values.rect2X[0],
+          parseInt(calcValue(scene, values.rect2X, currentYoffset)),
           0,
           parseInt(whiteRectWidth),
-          recalInnerHeight
+          parseInt(recalInnerHeight)
         );
 
         break;
