@@ -106,6 +106,7 @@
         rect1X: [0, 0, { start: 0, end: 0 }],
         rect2X: [0, 0, { start: 0, end: 0 }],
         blendHeight: [0, 0, { start: 0, end: 0 }],
+        transCanvas: [0, 0, { start: 0, end: 0 }],
         rectStartY: 0,
       },
     },
@@ -445,10 +446,12 @@
           )})`;
         }
 
-        // Draw Image on canvas which is being used on case 3 (inside case 2)
+        // Preparation for Section 3
+        // Draw canvas ahead before case 3.
         if (scrollRatio > 0.9) {
-          const values = sceneInfo[3].values;
           const obj = sceneInfo[3].objs;
+          const values = sceneInfo[3].values;
+
           const widthRatio = window.innerWidth / obj.canvas.width;
           const heightRatio = window.innerHeight / obj.canvas.height;
           let canvasScaleRatio;
@@ -463,10 +466,10 @@
           obj.context.fillStyle = 'white';
           obj.context.drawImage(obj.images[0], 0, 0);
 
-          const recalInnerWidth = window.innerWidth / canvasScaleRatio;
+          const recalInnerWidth = document.body.offsetWidth / canvasScaleRatio;
           const recalInnerHeight = window.innerHeight / canvasScaleRatio;
-
           const whiteRectWidth = recalInnerWidth * 0.15;
+
           values.rect1X[0] = (obj.canvas.width - recalInnerWidth) / 2;
           values.rect1X[1] = values.rect1X[0] - whiteRectWidth;
           values.rect2X[0] =
@@ -477,13 +480,13 @@
             parseInt(values.rect1X[0]),
             0,
             parseInt(whiteRectWidth),
-            obj.canvas.height
+            parseInt(recalInnerHeight)
           );
           obj.context.fillRect(
             parseInt(values.rect2X[0]),
             0,
             parseInt(whiteRectWidth),
-            obj.canvas.height
+            parseInt(recalInnerHeight)
           );
         }
 
@@ -505,21 +508,19 @@
         obj.context.fillStyle = 'white';
         obj.context.drawImage(obj.images[0], 0, 0);
 
-        const recalInnerWidth = window.innerWidth / canvasScaleRatio;
+        const recalInnerWidth = document.body.offsetWidth / canvasScaleRatio;
         const recalInnerHeight = window.innerHeight / canvasScaleRatio;
 
-        // console.log(obj.canvas.getBoundingClientRect());
         if (!values.rectStartY) {
-          // values.rectStartY = obj.canvas.getBoundingClientRect().top;
+          // values.rectStartY = objs.canvas.getBoundingClientRect().top
           values.rectStartY =
             obj.canvas.offsetTop +
             (obj.canvas.height - obj.canvas.height * canvasScaleRatio) / 2;
 
           values.rect1X[2].start =
-            window.innerHeight / 2 / sceneInfo[scene].scrollHeight;
+            values.rectStartY / 2 / sceneInfo[scene].scrollHeight;
           values.rect2X[2].start =
-            window.innerHeight / 2 / sceneInfo[scene].scrollHeight;
-
+            values.rectStartY / 2 / sceneInfo[scene].scrollHeight;
           values.rect1X[2].end =
             values.rectStartY / sceneInfo[scene].scrollHeight;
           values.rect2X[2].end =
@@ -532,28 +533,29 @@
         values.rect2X[0] = values.rect1X[0] + recalInnerWidth - whiteRectWidth;
         values.rect2X[1] = values.rect2X[0] + whiteRectWidth;
 
+        // obj.canvas.height;
         obj.context.fillRect(
           parseInt(calcValue(scene, values.rect1X, currentYoffset)),
           0,
           parseInt(whiteRectWidth),
-          obj.canvas.height
+          parseInt(recalInnerHeight)
         );
         obj.context.fillRect(
           parseInt(calcValue(scene, values.rect2X, currentYoffset)),
           0,
           parseInt(whiteRectWidth),
-          obj.canvas.height
+          parseInt(recalInnerHeight)
         );
 
-        // if canvas does not touch top of the browser
         if (scrollRatio < values.rect1X[2].end) {
           step = 1;
-          console.log('Bafore canvas touch the top');
+          console.log('BEFORE THE TOP');
           obj.canvas.classList.remove('sticky');
         } else {
           step = 2;
-          // blendHeight: [0, 0, { start: 0, end: 0 }],
-          // console.log('After canvas touch the top');
+          console.log('AFTER THE TOP');
+
+          values.blendHeight[0] = 0;
           values.blendHeight[1] = obj.canvas.height;
           values.blendHeight[2].start = values.rect1X[2].end;
           values.blendHeight[2].end = values.blendHeight[2].start + 0.2;
@@ -574,14 +576,35 @@
             obj.canvas.width,
             blendHeight
           );
-
           obj.canvas.classList.add('sticky');
           obj.canvas.style.top = `${
             -(obj.canvas.height - obj.canvas.height * canvasScaleRatio) / 2
           }px`;
 
           if (scrollRatio > values.blendHeight[2].end) {
-            // after masking image cover the canvas
+            console.log(calcValue(scene, values.transCanvas, currentYoffset));
+            step = 3;
+            values.transCanvas[0] = canvasScaleRatio;
+            values.transCanvas[1] = 0.45;
+            values.transCanvas[2].start = values.blendHeight[2].end;
+            values.transCanvas[2].end = values.transCanvas[2].start + 0.2;
+
+            obj.canvas.style.transform = `scale(${calcValue(
+              scene,
+              values.transCanvas,
+              currentYoffset
+            )})`;
+            obj.canvas.style.marginTop = 0;
+          }
+
+          if (
+            scrollRatio > values.transCanvas[2].end &&
+            values.transCanvas[2].end > 0
+          ) {
+            obj.canvas.classList.remove('sticky');
+            obj.canvas.style.marginTop = `${
+              sceneInfo[scene].scrollHeight * 0.4
+            }px`;
           }
         }
 
