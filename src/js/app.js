@@ -105,6 +105,8 @@
       values: {
         rect1X: [0, 0, { start: 0, end: 0 }],
         rect2X: [0, 0, { start: 0, end: 0 }],
+        blendHeight: [0, 0, { start: 0, end: 0 }],
+        transCanvas: [0, 0, { start: 0, end: 0 }],
         rectStartY: 0,
       },
     },
@@ -444,9 +446,54 @@
           )})`;
         }
 
+        // Preparation for Section 3
+        // Draw canvas ahead before case 3.
+        if (scrollRatio > 0.9) {
+          const obj = sceneInfo[3].objs;
+          const values = sceneInfo[3].values;
+
+          const widthRatio = window.innerWidth / obj.canvas.width;
+          const heightRatio = window.innerHeight / obj.canvas.height;
+          let canvasScaleRatio;
+
+          if (widthRatio <= heightRatio) {
+            canvasScaleRatio = heightRatio;
+          } else {
+            canvasScaleRatio = widthRatio;
+          }
+
+          obj.canvas.style.transform = `scale(${canvasScaleRatio})`;
+          obj.context.fillStyle = 'white';
+          obj.context.drawImage(obj.images[0], 0, 0);
+
+          const recalInnerWidth = document.body.offsetWidth / canvasScaleRatio;
+          const recalInnerHeight = window.innerHeight / canvasScaleRatio;
+          const whiteRectWidth = recalInnerWidth * 0.15;
+
+          values.rect1X[0] = (obj.canvas.width - recalInnerWidth) / 2;
+          values.rect1X[1] = values.rect1X[0] - whiteRectWidth;
+          values.rect2X[0] =
+            values.rect1X[0] + recalInnerWidth - whiteRectWidth;
+          values.rect2X[1] = values.rect2X[0] + whiteRectWidth;
+
+          obj.context.fillRect(
+            parseInt(values.rect1X[0]),
+            0,
+            parseInt(whiteRectWidth),
+            parseInt(recalInnerHeight)
+          );
+          obj.context.fillRect(
+            parseInt(values.rect2X[0]),
+            0,
+            parseInt(whiteRectWidth),
+            parseInt(recalInnerHeight)
+          );
+        }
+
         break;
 
       case 3:
+        let step = 0;
         const widthRatio = window.innerWidth / obj.canvas.width;
         const heightRatio = window.innerHeight / obj.canvas.height;
         let canvasScaleRatio;
@@ -480,8 +527,6 @@
             values.rectStartY / sceneInfo[scene].scrollHeight;
         }
 
-        console.log(obj.canvas.offsetTop);
-
         const whiteRectWidth = recalInnerWidth * 0.15;
         values.rect1X[0] = (obj.canvas.width - recalInnerWidth) / 2;
         values.rect1X[1] = values.rect1X[0] - whiteRectWidth;
@@ -501,6 +546,67 @@
           parseInt(whiteRectWidth),
           parseInt(recalInnerHeight)
         );
+
+        if (scrollRatio < values.rect1X[2].end) {
+          step = 1;
+          console.log('BEFORE THE TOP');
+          obj.canvas.classList.remove('sticky');
+        } else {
+          step = 2;
+          console.log('AFTER THE TOP');
+
+          values.blendHeight[0] = 0;
+          values.blendHeight[1] = obj.canvas.height;
+          values.blendHeight[2].start = values.rect1X[2].end;
+          values.blendHeight[2].end = values.blendHeight[2].start + 0.2;
+          const blendHeight = calcValue(
+            scene,
+            values.blendHeight,
+            currentYoffset
+          );
+
+          obj.context.drawImage(
+            obj.images[1],
+            0,
+            obj.canvas.height - blendHeight,
+            obj.canvas.width,
+            blendHeight,
+            0,
+            obj.canvas.height - blendHeight,
+            obj.canvas.width,
+            blendHeight
+          );
+          obj.canvas.classList.add('sticky');
+          obj.canvas.style.top = `${
+            -(obj.canvas.height - obj.canvas.height * canvasScaleRatio) / 2
+          }px`;
+
+          if (scrollRatio > values.blendHeight[2].end) {
+            console.log(calcValue(scene, values.transCanvas, currentYoffset));
+            step = 3;
+            values.transCanvas[0] = canvasScaleRatio;
+            values.transCanvas[1] = 0.45;
+            values.transCanvas[2].start = values.blendHeight[2].end;
+            values.transCanvas[2].end = values.transCanvas[2].start + 0.2;
+
+            obj.canvas.style.transform = `scale(${calcValue(
+              scene,
+              values.transCanvas,
+              currentYoffset
+            )})`;
+            obj.canvas.style.marginTop = 0;
+          }
+
+          if (
+            scrollRatio > values.transCanvas[2].end &&
+            values.transCanvas[2].end > 0
+          ) {
+            obj.canvas.classList.remove('sticky');
+            obj.canvas.style.marginTop = `${
+              sceneInfo[scene].scrollHeight * 0.4
+            }px`;
+          }
+        }
 
         break;
       default:
