@@ -95,6 +95,7 @@
       objs: {
         container: document.querySelector('#scroll-section-3'),
         canvas: document.querySelector('.image-blend-canvas'),
+        canvasCaption: document.querySelector('.canvas-caption'),
         context: document.querySelector('.image-blend-canvas').getContext('2d'),
         imagePath: [
           './assets/img/blending/oban.jpg',
@@ -107,6 +108,8 @@
         rect2X: [0, 0, { start: 0, end: 0 }],
         blendHeight: [0, 0, { start: 0, end: 0 }],
         transCanvas: [0, 0, { start: 0, end: 0 }],
+        canvasCaption_opacity: [0, 1, { start: 0, end: 0 }],
+        canvasCaption_translateY: [0, 0, { start: 0, end: 0 }],
         rectStartY: 0,
       },
     },
@@ -136,6 +139,16 @@
   };
 
   setCanvasImages();
+
+  const stickyMenu = () => {
+    console.log('sticky menu ');
+
+    if (yOffset > 44) {
+      document.body.classList.add('local-nav-sticky');
+    } else {
+      document.body.classList.remove('local-nav-sticky');
+    }
+  };
 
   const setLayout = () => {
     // setting height of each scroll section
@@ -549,11 +562,9 @@
 
         if (scrollRatio < values.rect1X[2].end) {
           step = 1;
-          console.log('BEFORE THE TOP');
           obj.canvas.classList.remove('sticky');
         } else {
           step = 2;
-          console.log('AFTER THE TOP');
 
           values.blendHeight[0] = 0;
           values.blendHeight[1] = obj.canvas.height;
@@ -582,7 +593,6 @@
           }px`;
 
           if (scrollRatio > values.blendHeight[2].end) {
-            console.log(calcValue(scene, values.transCanvas, currentYoffset));
             step = 3;
             values.transCanvas[0] = canvasScaleRatio;
             values.transCanvas[1] = 0.45;
@@ -605,6 +615,28 @@
             obj.canvas.style.marginTop = `${
               sceneInfo[scene].scrollHeight * 0.4
             }px`;
+
+            values.canvasCaption_opacity[2].start = values.transCanvas[2].end;
+            values.canvasCaption_translateY[2].start =
+              values.transCanvas[2].end;
+
+            values.canvasCaption_opacity[2].end =
+              values.canvasCaption_opacity[2].start + 0.1;
+
+            values.canvasCaption_translateY[2].end =
+              values.canvasCaption_opacity[2].start + 0.1;
+
+            obj.canvasCaption.style.opacity = calcValue(
+              scene,
+              values.canvasCaption_opacity,
+              currentYoffset
+            );
+
+            obj.canvasCaption.style.transform = `translate3d(0, ${calcValue(
+              scene,
+              values.canvasCaption_translateY,
+              currentYoffset
+            )}%, 0)`;
           }
         }
 
@@ -648,6 +680,7 @@
   };
 
   window.addEventListener('scroll', () => {
+    stickyMenu();
     yOffset = window.pageYOffset;
     scrollLoop();
   });
