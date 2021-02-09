@@ -2,6 +2,11 @@
   let yOffset = 0; // window.pageYoffset;
   let prevScrollHeight = 0;
   let currentScene = 0;
+  let enterNewScene = false;
+  let acc = 0.1;
+  let delayedOffset = 0;
+  let rafId;
+  let rafState;
 
   const sceneInfo = [
     {
@@ -90,7 +95,7 @@
     {
       // 3
       type: 'sticky',
-      heightNum: 5,
+      heightNum: 4,
       scrollHeight: 0,
       objs: {
         container: document.querySelector('#scroll-section-3'),
@@ -138,11 +143,7 @@
     }
   };
 
-  setCanvasImages();
-
   const stickyMenu = () => {
-    console.log('sticky menu ');
-
     if (yOffset > 44) {
       document.body.classList.add('local-nav-sticky');
     } else {
@@ -222,11 +223,6 @@
 
     switch (scene) {
       case 0:
-        let sequence = Math.round(
-          calcValue(scene, values.imageSequence, currentYoffset)
-        );
-        obj.context.drawImage(obj.videoImages[sequence], 0, 0);
-
         obj.canvas.style.opacity = calcValue(
           scene,
           values.canvas_opacity,
@@ -342,10 +338,13 @@
       case 1:
         break;
       case 2:
-        let sequence2 = Math.round(
-          calcValue(scene, values.imageSequence, currentYoffset)
-        );
-        obj.context.drawImage(obj.videoImages[sequence2], 0, 0);
+        // let sequence2 = Math.round(
+        //   calcValue(scene, values.imageSequence, currentYoffset)
+        // );
+
+        // if (obj.videoImages[sequence2]) {
+        //   obj.context.drawImage(obj.videoImages[sequence2], 0, 0);
+        // }
 
         if (scrollRatio <= 0.5) {
           obj.canvas.style.opacity = calcValue(
@@ -653,7 +652,10 @@
       prevScrollHeight += sceneInfo[i].scrollHeight;
     }
 
-    if (yOffset > prevScrollHeight + sceneInfo[currentScene].scrollHeight) {
+    if (
+      delayedOffset >
+      prevScrollHeight + sceneInfo[currentScene].scrollHeight
+    ) {
       enterNewScence = true;
       currentScene += 1;
 
@@ -663,7 +665,7 @@
       );
     }
 
-    if (yOffset < prevScrollHeight) {
+    if (delayedOffset < prevScrollHeight) {
       if (currentScene === 0) return;
       enterNewScence = true;
       currentScene -= 1;
@@ -679,17 +681,66 @@
     }
   };
 
-  window.addEventListener('scroll', () => {
-    stickyMenu();
-    yOffset = window.pageYOffset;
-    scrollLoop();
-  });
+  const loop = () => {
+    delayedOffset = delayedOffset + (yOffset - delayedOffset) * acc;
+
+    if (!enterNewScene) {
+      if (currentScene === 0 || currentScene === 2) {
+        const currentYoffset = delayedOffset - prevScrollHeight;
+        const obj = sceneInfo[currentScene].objs;
+        const values = sceneInfo[currentScene].values;
+
+        let sequence = Math.round(
+          calcValue(currentScene, values.imageSequence, currentYoffset)
+        );
+
+        if (obj.videoImages[sequence]) {
+          obj.context.drawImage(obj.videoImages[sequence], 0, 0);
+        }
+      }
+    }
+
+    rafId = requestAnimationFrame(loop);
+
+    if (Math.abs(yOffset - delayedOffset) < 1) {
+      cancelAnimationFrame(rafId);
+      rafState = false;
+    }
+  };
 
   window.addEventListener('load', () => {
+    document.body.classList.remove('before-load');
+
     setLayout();
     sceneInfo[0].objs.context.drawImage(sceneInfo[0].objs.videoImages[0], 0, 0);
-  });
-  window.addEventListener('resize', setLayout);
 
-  setLayout();
+    window.addEventListener('scroll', () => {
+      stickyMenu();
+      yOffset = window.pageYOffset;
+      scrollLoop();
+
+      if (!rafState) {
+        rafId = requestAnimationFrame(loop);
+        rafState = true;
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 600) {
+        setLayout();
+      }
+
+      sceneInfo[3].values.rectStartY = 0;
+    });
+
+    window.addEventListener('orientationchange', setLayout);
+
+    document
+      .querySelector('.loading')
+      .addEventListener('transitionend', (e) => {
+        document.body.removeChild(e.currentTarget);
+      });
+  });
+
+  setCanvasImages();
 })();
