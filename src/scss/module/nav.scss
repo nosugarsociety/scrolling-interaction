@@ -21,14 +21,16 @@
   top: 45px;
   height: 52px;
   border-bottom: 1px solid #ddd;
-
+ 
   .local-nav-sticky & {
-    position: sticky;
+    position: fixed;
     top: 0;
     background-color: rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: saturate(180%) blur(15px);
+    -moz-backdrop-filter: saturate(180%) blur(15px);
+    -o-backdrop-filter: saturate(180%) blur(15px);
     backdrop-filter: saturate(180%) blur(15px);
   }
-  
 }
 
 .global-nav-links,

@@ -15,7 +15,7 @@
 
   small {
     display: block;
-    margin-bottom: 0.5refm;
+    margin-bottom: 0.5rem;
     font-size: 1.2rem;
   }
 
@@ -172,7 +172,8 @@
   .cavas-cpation {
     font-size: 2rem;
   }
-
-
 }
 
+.container {
+  overflow-x: hidden;
+}

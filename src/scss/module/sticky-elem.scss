@@ -21,4 +21,5 @@
 .scroll-section-2--active #scroll-section-2 .sticky-elem,
 .scroll-section-3--active #scroll-section-3 .sticky-elem {
   display: block;
+  will-change: transform, opacity;
 } 
