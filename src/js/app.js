@@ -114,7 +114,7 @@
         blendHeight: [0, 0, { start: 0, end: 0 }],
         transCanvas: [0, 0, { start: 0, end: 0 }],
         canvasCaption_opacity: [0, 1, { start: 0, end: 0 }],
-        canvasCaption_translateY: [0, 0, { start: 0, end: 0 }],
+        canvasCaption_translateY: [20, 0, { start: 0, end: 0 }],
         rectStartY: 0,
       },
     },
@@ -334,20 +334,10 @@
             currentYoffset
           )}%, 0)`;
         }
-
-        // objs.element1.style;
         break;
       case 1:
         break;
       case 2:
-        // let sequence2 = Math.round(
-        //   calcValue(scene, values.imageSequence, currentYoffset)
-        // );
-
-        // if (obj.videoImages[sequence2]) {
-        //   obj.context.drawImage(obj.videoImages[sequence2], 0, 0);
-        // }
-
         if (scrollRatio <= 0.5) {
           obj.canvas.style.opacity = calcValue(
             scene,
@@ -532,9 +522,9 @@
             (obj.canvas.height - obj.canvas.height * canvasScaleRatio) / 2;
 
           values.rect1X[2].start =
-            values.rectStartY / 2 / sceneInfo[scene].scrollHeight;
+            window.innerHeight / 2 / sceneInfo[scene].scrollHeight;
           values.rect2X[2].start =
-            values.rectStartY / 2 / sceneInfo[scene].scrollHeight;
+            window.innerHeight / 2 / sceneInfo[scene].scrollHeight;
           values.rect1X[2].end =
             values.rectStartY / sceneInfo[scene].scrollHeight;
           values.rect2X[2].end =
@@ -547,7 +537,6 @@
         values.rect2X[0] = values.rect1X[0] + recalInnerWidth - whiteRectWidth;
         values.rect2X[1] = values.rect2X[0] + whiteRectWidth;
 
-        // obj.canvas.height;
         obj.context.fillRect(
           parseInt(calcValue(scene, values.rect1X, currentYoffset)),
           0,
@@ -594,9 +583,9 @@
           }px`;
 
           if (scrollRatio > values.blendHeight[2].end) {
-            step = 3;
             values.transCanvas[0] = canvasScaleRatio;
-            values.transCanvas[1] = 0.45;
+            values.transCanvas[1] =
+              document.body.offsetWidth / (1.5 * obj.canvas.width);
             values.transCanvas[2].start = values.blendHeight[2].end;
             values.transCanvas[2].end = values.transCanvas[2].start + 0.2;
 
@@ -733,11 +722,7 @@
     let tempYOffset = yOffset;
     let tempScrollCount = 0;
 
-    console.log('tempYOffset:', tempYOffset);
-
     if (yOffset > 0) {
-      console.log('here');
-
       let siId = setInterval(() => {
         window.scrollTo(0, tempYOffset);
         tempYOffset += 1;
@@ -763,8 +748,6 @@
 
     window.addEventListener('resize', () => {
       if (window.innerWidth > 900) {
-        // setLayout();
-        // sceneInfo[3].values.rectStartY = 0;
         window.location.reload();
       }
     });
