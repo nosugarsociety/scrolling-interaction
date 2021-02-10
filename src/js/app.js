@@ -103,7 +103,7 @@
         canvasCaption: document.querySelector('.canvas-caption'),
         context: document.querySelector('.image-blend-canvas').getContext('2d'),
         imagePath: [
-          './assets/img/blending/oban.jpg',
+          './assets/img/blending/mug.jpg',
           './assets/img/blending/blend-image-2.jpg',
         ],
         images: [],
@@ -163,6 +163,8 @@
         i
       ].objs.container.style.height = `${sceneInfo[i].scrollHeight}px`;
     }
+
+    yOffset = window.pageYOffset;
 
     let totaScrolllHeight = 0;
     for (let i = 0; i < sceneInfo.length; i++) {
@@ -653,11 +655,25 @@
     }
 
     if (
+      delayedOffset <
+      prevScrollHeight + sceneInfo[currentScene].scrollHeight
+    ) {
+      document.body.classList.remove('scroll-effect-end');
+    }
+
+    if (
       delayedOffset >
       prevScrollHeight + sceneInfo[currentScene].scrollHeight
     ) {
       enterNewScence = true;
-      currentScene += 1;
+
+      if (currentScene < sceneInfo.length - 1) {
+        document.body.classList.add('scroll-effect-end');
+      }
+
+      if (currentScene < sceneInfo.length - 1) {
+        currentScene += 1;
+      }
 
       document.body.setAttribute(
         'class',
@@ -709,10 +725,30 @@
   };
 
   window.addEventListener('load', () => {
+    setLayout();
     document.body.classList.remove('before-load');
-
     setLayout();
     sceneInfo[0].objs.context.drawImage(sceneInfo[0].objs.videoImages[0], 0, 0);
+
+    let tempYOffset = yOffset;
+    let tempScrollCount = 0;
+
+    console.log('tempYOffset:', tempYOffset);
+
+    if (yOffset > 0) {
+      console.log('here');
+
+      let siId = setInterval(() => {
+        window.scrollTo(0, tempYOffset);
+        tempYOffset += 1;
+
+        if (tempScrollCount > 20) {
+          clearInterval(siId);
+        }
+
+        tempScrollCount++;
+      }, 20);
+    }
 
     window.addEventListener('scroll', () => {
       stickyMenu();
@@ -726,14 +762,19 @@
     });
 
     window.addEventListener('resize', () => {
-      if (window.innerWidth > 600) {
-        setLayout();
+      if (window.innerWidth > 900) {
+        // setLayout();
+        // sceneInfo[3].values.rectStartY = 0;
+        window.location.reload();
       }
-
-      sceneInfo[3].values.rectStartY = 0;
     });
 
-    window.addEventListener('orientationchange', setLayout);
+    window.addEventListener('orientationchange', () => {
+      scrollTo(0, 0);
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    });
 
     document
       .querySelector('.loading')

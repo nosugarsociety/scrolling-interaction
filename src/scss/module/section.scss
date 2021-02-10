@@ -41,6 +41,7 @@
 
 .description {
   margin: 0 auto;
+  padding: 0 20px;
   max-width: 1000px;
   font-size: 1.2rem;
   color: #888;
@@ -83,7 +84,7 @@
 
 .mid-message {
   max-width: 1000px;
-  margin: 0 auto;
+  margin: 0 auto 30px;
   padding: 0 1rem;
   font-size: 2rem;
   color: #888;
@@ -120,7 +121,7 @@
 // Section 3
 .image-blend-canvas {
   &.sticky {
-    position: sticky;
+    position: fixed;
     top: 0;
   }
 }
@@ -175,5 +176,13 @@
 }
 
 .container {
-  overflow-x: hidden;
+  overflow-x: hidden; 
+
+  .before-loading & {
+    display: none;
+  }
+}
+
+.normal-content {
+  margin-bottom: 10rem;
 }

@@ -23,3 +23,9 @@
   display: block;
   will-change: transform, opacity;
 } 
+
+.scroll-effect-end {
+  .sticky-elem {
+    display: none !important;
+  }
+}
